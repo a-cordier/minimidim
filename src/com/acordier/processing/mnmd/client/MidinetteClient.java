@@ -1,7 +1,7 @@
 package com.acordier.processing.mnmd.client;
 
-import com.acordier.processing.mndmd.core.Midinette;
-import com.acordier.processing.mndmd.core.Youki;
+import com.acordier.processing.mnmd.core.Midinette;
+import com.acordier.processing.mnmd.core.Youki;
 
 import processing.core.PApplet;
 

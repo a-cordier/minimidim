@@ -1,4 +1,4 @@
-package com.acordier.processing.mndmd.core;
+package com.acordier.processing.mnmd.core;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.ugens.Instrument;
