@@ -9,21 +9,18 @@ public class MidinetteClient extends PApplet {
 
 	private static final long serialVersionUID = 1L;
 
-
-	
 	@Override
 	public void setup() {
 		Youki youki = new Youki(this);
 		Midinette midinette = new Midinette(youki);
-		midinette.randomize();
+		midinette.randomize(3);
+		//midinette.fourBeat(60);
 		midinette.play(true);
 	}
-	
+
 	@Override
 	public void draw() {
 
 	}
-
-
 
 }

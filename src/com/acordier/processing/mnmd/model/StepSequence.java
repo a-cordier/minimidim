@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import processing.core.PApplet;
-
 public class StepSequence implements Iterable<Step>{
 
 	private List<Step> steps;
@@ -41,15 +39,15 @@ public class StepSequence implements Iterable<Step>{
 
 	/**
 	 * Feed with random beats
+	 * @param octave: an integer between 0 and 9 
 	 */
-	public void randomize() {
+	public void randomize(int octave) {
 		random = new Random();
-		int idx;
 		for (byte i = 0; i < steps.size(); i++)  {
-			idx = PApplet.ceil(random.nextInt(6));
 			steps.set(i, new Step(127 - random.nextInt(127 - 50),
 					Math.random() > 0.5 ? true : false));
-			steps.get(i).setNote(ScalesConstants.pNotes[6][idx]);
+			/* Set step to trigger a random note in the given octave */
+			steps.get(i).setNote(random.nextInt(12) + 12 * octave);
 		}
 	}
 	
@@ -61,6 +59,7 @@ public class StepSequence implements Iterable<Step>{
 			steps.set(i, new Step(105,
 					i%4==0 ? true : false));
 			steps.get(i).setNote(note);
+			System.out.println(steps.get(i));
 		}
 	}
 	

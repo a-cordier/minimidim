@@ -29,31 +29,30 @@ public class Youki implements MidiInstrument {
 	ADSR adsr;
 	MidiReceiver receiver;
 	PApplet sketch;
-	
-	
+
 	/** default patching */
 	public Youki(PApplet sketch) {
-		/* manquait l'amplitude du signal*/
+		/* manquait l'amplitude du signal */
 		this.sketch = sketch;
 		/* Max amp, Attack, Decay, Sustain, Release */
-		adsr = new ADSR( 0.5F, 0.005F, 0.2F, 0.02F, 0.01F );
-		osc_1 = new Oscil( 440, 0.5F, Waves.SAW  ); 
-		osc_2 = new Oscil( 440, 0.5F, Waves.SAW );
-		filter = new MoogFilter(200, 0.75F);
-		lfo = new Oscil( 0.125F, 1500.F, Waves.SINE );
-	    lfo.offset.setLastValue( 2000.F ); // i don't know what i'm doing here
-		lfo.patch(filter.frequency);
+		adsr = new ADSR( 0.4F, 0.05F, 0.8F, 0.03F, 0.0001F );
+		osc_1 = new Oscil(440, 0.5F, Waves.SAW);
+		osc_2 = new Oscil(440, 0.5F, Waves.SINE);
+		filter = new MoogFilter(150, 0.65F);
+		lfo = new Oscil(0.250F, 2000.F, Waves.SINE);
 		sum = new Summer();
 		minim = new Minim(sketch);
 		out = minim.getLineOut();
+		lfo.offset.setLastValue(2000.F); // i don't know what i'm doing here
+		lfo.patch(filter.frequency);
 		osc_1.patch(sum);
 		osc_2.patch(sum);
-		sum.patch(filter);
-		filter.patch(adsr);
+		sum.patch(adsr);
+		// filter.patch(out);
 		receiver = new MidiReceiver(this);
 	}
-	
-	@Override 
+
+	@Override
 	public void noteOn(float dur) {
 		adsr.patch(out);
 		adsr.noteOn(); // env begins
@@ -63,43 +62,45 @@ public class Youki implements MidiInstrument {
 	@Override
 	public void noteOff() {
 		adsr.noteOff(); // env release begins
-		adsr.unpatchAfterRelease(out); // patch ends;
+		//adsr.unpatchAfterRelease(out); // patch ends;
 	}
-	
+
 	@Override
-	public void noteOn(int note, int velocity){
+	public void noteOn(int note, int velocity) {
 		setFrequency(Frequency.ofMidiNote(note));
-		setAmplitude(velocity/254.F);
-		noteOn(1.F);
+		setAmplitude(velocity / 254.F);
+		noteOn(0);
 	}
-	
+
 	@Override
 	public void controlChange(int key, int value) {
 		// TODO Auto-generated method stub
-		
+
 	}
-		
+
 	@Override
 	public AudioOutput getAudioOut() {
 		return out;
-	} 
-	
-	/** this wrapper method is responsible of setting 
-    the global amplitude value and applying any 
-    transformation induced by local settings */
-	public void setAmplitude(float amp){
+	}
+
+	/**
+	 * this wrapper method is responsible of setting the global amplitude value
+	 * and applying any transformation induced by local settings
+	 */
+	public void setAmplitude(float amp) {
 		osc_1.setAmplitude(amp);
 		osc_2.setAmplitude(amp);
 	}
-	
-	/** this wrapper method is responsible of setting 
-	    the global frequency value and applying any 
-	    transformation induced by local settings */
-	public void setFrequency(Frequency frequency){
+
+	/**
+	 * this wrapper method is responsible of setting the global frequency value
+	 * and applying any transformation induced by local settings
+	 */
+	public void setFrequency(Frequency frequency) {
 		osc_1.setFrequency(frequency);
 		osc_2.setFrequency(frequency);
 	}
-	
+
 	@Override
 	public void setAudioOut(AudioOutput out) {
 		this.out = out;
@@ -129,5 +130,5 @@ public class Youki implements MidiInstrument {
 
 	public void setAdsr(ADSR adsr) {
 		this.adsr = adsr;
-	}	
+	}
 }

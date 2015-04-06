@@ -1,9 +1,9 @@
 package com.acordier.processing.mnmd.features;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
 import com.acordier.processing.mnmd.core.AbstractMidiSequencer;
@@ -14,20 +14,12 @@ import com.acordier.processing.mnmd.model.StepSequence;
 public class Midinette extends AbstractMidiSequencer {
 
 	private StepSequence stepSequence;
+	private int ticksPerStep;
 
 	public Midinette(MidiInstrument instrument) {
-		try {
-			this.instrument = instrument;
-			sequencer = MidiSystem.getSequencer();
-			sequencer.getTransmitter().setReceiver(instrument.getReceiver());
-			stepSequence = new StepSequence();
-			System.out.println(stepSequence.size());
-			setSignature(4, 4); // initialize anything being related to timing
-								// and sequencing
-			setTempo(120);
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
+		initSequencer(instrument);
+		setTempo(120);
+		setSignature(4, 4); // initialize anything being related to timing
 	}
 
 	public Midinette() {
@@ -37,8 +29,8 @@ public class Midinette extends AbstractMidiSequencer {
 		stop();
 	}
 
-	public void randomize() {
-		stepSequence.randomize();
+	public void randomize(int octave) {
+		stepSequence.randomize(octave);
 		addNotes();
 	}
 
@@ -52,32 +44,43 @@ public class Midinette extends AbstractMidiSequencer {
 		int i = 0;
 		for (Step step : stepSequence) {
 			if (step.isEnabled()) {
-				addNote(step.getNote(), step.getVelocity(), i, 1);
-			} else
-				i++;
+				addNote(step.getNote(), step.getVelocity(), i * ticksPerStep,
+						ticksPerStep*2);
+			}
+			i++;
 		}
 	}
 
 	@Override
-	public void setSignature(int ticksPerBeat, int beats) {
-		try {
-			this.ticksPerBeat = ticksPerBeat;
-			sequence = new Sequence(Sequence.PPQ, ticksPerBeat);
-			track = sequence.createTrack();
-			sequencer.setSequence(sequence);
-			int stepCount = ticksPerBeat * beats;
-			if (stepSequence == null) {
-				stepSequence = new StepSequence(stepCount);
-			}
-			while (stepCount < stepSequence.size()) {
-				stepSequence.shrink();
-			}
-			while (stepCount > stepSequence.size()) {
-				stepSequence.grow();
-			}
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
+	public void setSignature(int stepsPerBeat, int beats) {
+		ticksPerStep = sequence.getResolution() / stepsPerBeat;
+		instrument.getAudioOut().setDurationFactor(1.F);
+		int stepCount = stepsPerBeat * beats; // setting the size of the step
+												// sequence
+		if (stepSequence == null) {
+			stepSequence = new StepSequence(stepCount);
 		}
+		while (stepCount < stepSequence.size()) {
+			stepSequence.shrink();
+		}
+		while (stepCount > stepSequence.size()) {
+			stepSequence.grow();
+		}
+		try {
+			/*
+			 * we set the end of track meta message for proper looping (status
+			 * code for EOT is 47=0x2f)
+			 */
+			MetaMessage enOfTrackMsg = new MetaMessage();
+			enOfTrackMsg.setMessage(0x2F, new byte[] {}, 0);
+			MidiEvent enOfTrackEvt = new MidiEvent(enOfTrackMsg,
+					stepSequence.size() * ticksPerStep);
+			track.add(enOfTrackEvt);
+		} catch (InvalidMidiDataException e) {
+			System.out
+					.println("Error setting end of track event (invalid midi data)");
+		}
+
 	}
 
 	@Override
@@ -101,7 +104,6 @@ public class Midinette extends AbstractMidiSequencer {
 		}
 
 	}
-
 
 	@Override
 	public void stop() {
