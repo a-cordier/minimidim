@@ -1,6 +1,6 @@
-# MINIM-SYNTH
+# MINIMIDIM
 
-Giving a try to write a basic synth using minim library and processing
+Builting a midi synth scripting environment based on the processing minim library
 
 ## Components
 
@@ -8,7 +8,7 @@ Giving a try to write a basic synth using minim library and processing
 
 Sequencer should be responsible for setting a tempo, playing a sequence, and send events to instruments or effects
 
-### LinkableInstrument
+### MidiInstrument
 
-This interface extends the Instrument interface, adding methods enable tying of instruments to sequencers
+This interface extends the Instrument interface, adding methods enable tying of instruments to classes extending AbstractMidiSequencer
 
