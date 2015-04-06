@@ -1,19 +1,17 @@
 package com.acordier.processing.mnmd.core;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 
 import com.acordier.processing.mnmd.model.Step;
 import com.acordier.processing.mnmd.model.StepSequence;
 
-public class Midinette extends AbstractMidiSequencer implements MetaEventListener {
+public class Midinette extends AbstractMidiSequencer {
 
 	private StepSequence stepSequence;
-	private static final int END_OF_TRACK_EVENT = 0x2F;
 
 	public Midinette(MidiInstrument instrument) {
 		try {
@@ -21,7 +19,9 @@ public class Midinette extends AbstractMidiSequencer implements MetaEventListene
 			sequencer = MidiSystem.getSequencer();
 			sequencer.getTransmitter().setReceiver(instrument.getReceiver());
 			stepSequence = new StepSequence();
-			setSignature(4, 4); // initialize anything being related to timing and sequencing
+			System.out.println(stepSequence.size());
+			setSignature(4, 4); // initialize anything being related to timing
+								// and sequencing
 			setTempo(120);
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
@@ -37,20 +37,24 @@ public class Midinette extends AbstractMidiSequencer implements MetaEventListene
 
 	public void randomize() {
 		stepSequence.randomize();
-		int i = 0;
-		for(Step step: stepSequence){
-			if(step.isEnabled()){
-				addNote(step.getNote(), step.getVelocity(), i, 4);
-				System.out.println(step);
-			} else System.out.println("no beat");
-			i++;
-		}
+		addNotes();
 	}
 
 	public void fourBeat(int note) {
 		stepSequence.fourBeat(note);
+		addNotes();
+
 	}
 
+	private void addNotes() {
+		int i = 0;
+		for (Step step : stepSequence) {
+			if (step.isEnabled()) {
+				addNote(step.getNote(), step.getVelocity(), i, 1);
+			} else
+				i++;
+		}
+	}
 
 	@Override
 	public void setSignature(int ticksPerBeat, int beats) {
@@ -59,49 +63,48 @@ public class Midinette extends AbstractMidiSequencer implements MetaEventListene
 			sequence = new Sequence(Sequence.PPQ, ticksPerBeat);
 			track = sequence.createTrack();
 			sequencer.setSequence(sequence);
-			instrument.getAudioOut().setDurationFactor(1.F / ticksPerBeat); // default note duration
 			int stepCount = ticksPerBeat * beats;
 			if (stepSequence == null) {
 				stepSequence = new StepSequence(stepCount);
 			}
-			while (stepCount < stepSequence.getStepCount()) {
+			while (stepCount < stepSequence.size()) {
 				stepSequence.shrink();
 			}
-			while (stepCount > stepSequence.getStepCount()) {
+			while (stepCount > stepSequence.size()) {
 				stepSequence.grow();
 			}
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void play(boolean loop) {
+		this.loop = loop;
 		try {
-			this.loop = loop;
-			if(!sequencer.isOpen()){
+			if (!sequencer.isOpen()) {
 				sequencer.open();
 			}
-			sequencer.start();
+			if (sequencer != null && sequence != null && sequencer.isOpen()) {
+				if (loop) {
+					sequencer.setLoopStartPoint(0);
+					sequencer.setLoopEndPoint(-1);
+					sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+				}
+				sequencer.start();
+			}
+
 		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
-	
+
+
 	@Override
-	public void stop(){
+	public void stop() {
 		sequencer.stop();
 		sequencer.setMicrosecondPosition(0);
 	}
-
-	@Override // Handling looping through the sequence
-	public void meta(MetaMessage message) {
-		 if (message.getType() == END_OF_TRACK_EVENT) {
-		      if (sequencer != null && sequencer.isOpen() && loop) {
-		        sequencer.start();
-		      }
-		    }
-	}	 
 
 }

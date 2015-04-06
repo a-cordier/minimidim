@@ -2,6 +2,7 @@ package com.acordier.processing.mnmd.client;
 
 import com.acordier.processing.mnmd.core.Midinette;
 import com.acordier.processing.mnmd.core.Youki;
+import com.acordier.processing.mnmd.model.ScalesConstants;
 
 import processing.core.PApplet;
 
@@ -13,7 +14,6 @@ public class MidinetteClient extends PApplet {
 	
 	@Override
 	public void setup() {
-		size(100,100);
 		Youki youki = new Youki(this);
 		Midinette midinette = new Midinette(youki);
 		midinette.randomize();

@@ -33,12 +33,11 @@ public class Youki implements MidiInstrument {
 		/* manquait l'amplitude du signal*/
 		this.sketch = sketch;
 		/* Max amp, Attack, Decay, Sustain, Release */
-		adsr = new ADSR( 0.5F, 0.005F, 0.1F, 0.03F, 0.01F );
+		adsr = new ADSR( 0.5F, 0.005F, 0.2F, 0.02F, 0.01F );
 		osc_1 = new Oscil( 440, 0.5F, Waves.SAW  ); 
 		osc_2 = new Oscil( 440, 0.5F, Waves.SAW );
 		filter = new MoogFilter(200, 0.75F);
 		lfo = new Oscil( 0.125F, 1500.F, Waves.SINE );
-		// centered on 500 Hz
 	    lfo.offset.setLastValue( 2000.F ); // i don't know what i'm doing here
 		lfo.patch(filter.frequency);
 		sum = new Summer();
@@ -65,10 +64,10 @@ public class Youki implements MidiInstrument {
 	}
 	
 	@Override
-	public void playNote(float offset, int note, int velocity, float duration){
+	public void noteOn(int note, int velocity){
 		setFrequency(Frequency.ofMidiNote(note));
 		setAmplitude(velocity/254.F);
-		out.playNote(offset, duration, this);
+		noteOn(1.F);
 	}
 	
 	@Override
@@ -127,10 +126,5 @@ public class Youki implements MidiInstrument {
 
 	public void setAdsr(ADSR adsr) {
 		this.adsr = adsr;
-	}
-
-	
-
-	
-	
+	}	
 }

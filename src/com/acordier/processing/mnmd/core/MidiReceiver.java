@@ -26,7 +26,8 @@ public class MidiReceiver implements Receiver {
 	private void handleShortMessage(ShortMessage message, long timestamp){
 		if(message.getCommand() == ShortMessage.NOTE_ON){
 			int note = message.getData1(), velocity = message.getData2();
-			instrument.playNote(0.F, note, velocity, 1.F);
+			System.out.println(String.format("{note:%s, velocity:%s}", note, velocity));
+			instrument.noteOn(note, velocity);
 		}
 		if(message.getCommand() == ShortMessage.NOTE_OFF){
 			instrument.noteOff();

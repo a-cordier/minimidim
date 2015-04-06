@@ -10,23 +10,22 @@ import processing.core.PApplet;
 public class StepSequence implements Iterable<Step>{
 
 	private List<Step> steps;
-	private int stepCount;
 	private Random random;
 
-	public StepSequence(int stepCount) {
-		this.stepCount = stepCount;
-		steps = new ArrayList<Step>(stepCount);
+	public StepSequence(int size) {
+		steps = new ArrayList<Step>(size);
 		feed();
 	}
 
+	/** default constructor of 16 steps */
 	public StepSequence() {
-		stepCount = 16;
-		steps = new ArrayList<Step>(stepCount);
+		steps = new ArrayList<Step>(16);
 		feed();
 	}
 	
+	/** Feed with empty beats */
 	private void feed(){
-		for (byte i = 0; i < stepCount; i++) {
+		for (byte i = 0; i < steps.size(); i++) {
 			steps.add(new Step());
 		}
 	}
@@ -35,7 +34,7 @@ public class StepSequence implements Iterable<Step>{
 	 * Reset all beats
 	 */
 	public void reset() {
-		for (byte i = 0; i < stepCount; i++)  {
+		for (byte i = 0; i < steps.size(); i++)  {
 			steps.get(i).reset();
 		}
 	}
@@ -46,19 +45,19 @@ public class StepSequence implements Iterable<Step>{
 	public void randomize() {
 		random = new Random();
 		int idx;
-		for (byte i = 0; i < stepCount; i++)  {
+		for (byte i = 0; i < steps.size(); i++)  {
 			idx = PApplet.ceil(random.nextInt(6));
 			steps.set(i, new Step(127 - random.nextInt(127 - 50),
 					Math.random() > 0.5 ? true : false));
-			steps.get(i).setNote(ScalesConstants.pNotes[0][idx]);
+			steps.get(i).setNote(ScalesConstants.pNotes[6][idx]);
 		}
 	}
 	
 	/**
-	 * Feed with random beats
+	 * Feed with four regular beats
 	 */
 	public void fourBeat(int note) {
-		for (byte i = 0; i < stepCount; i++)  {
+		for (byte i = 0; i < steps.size(); i++)  {
 			steps.set(i, new Step(105,
 					i%4==0 ? true : false));
 			steps.get(i).setNote(note);
@@ -72,7 +71,7 @@ public class StepSequence implements Iterable<Step>{
 		this.steps.add(new Step());
 	}
 	
-	/**
+	/**take care of the end of track event
 	 * Remove one beat
 	 */
 	public void shrink(){
@@ -83,9 +82,10 @@ public class StepSequence implements Iterable<Step>{
 	public Iterator<Step> iterator() {
 		return steps.iterator();
 	}
-
-	public int getStepCount() {
-		return stepCount;
+	
+	/** returns the current number of steps of the step sequence */
+	public int size() {
+		return steps.size();
 	}
 	
 	

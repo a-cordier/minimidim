@@ -7,7 +7,7 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-public abstract class AbstractMidiSequencer {
+public abstract class AbstractMidiSequencer  {
 	
 	protected Sequence sequence;
 	protected Sequencer sequencer;
@@ -17,6 +17,7 @@ public abstract class AbstractMidiSequencer {
 	protected int ticksPerBeat; // (ie per quarter note)
 	protected boolean loop;
 	protected MidiInstrument instrument;
+
 	
 	public void setTempo(int tempo) {
 		instrument.getAudioOut().setTempo(tempo);
