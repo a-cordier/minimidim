@@ -1,4 +1,7 @@
-package com.acordier.processing.mnmd.core;
+package com.acordier.processing.mnmd.features;
+
+import com.acordier.processing.mnmd.core.MidiInstrument;
+import com.acordier.processing.mnmd.core.MidiReceiver;
 
 import processing.core.PApplet;
 import ddf.minim.AudioOutput;

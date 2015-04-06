@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.core;
+package com.acordier.processing.mnmd.features;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
@@ -6,6 +6,8 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
+import com.acordier.processing.mnmd.core.AbstractMidiSequencer;
+import com.acordier.processing.mnmd.core.MidiInstrument;
 import com.acordier.processing.mnmd.model.Step;
 import com.acordier.processing.mnmd.model.StepSequence;
 
