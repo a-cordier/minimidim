@@ -1,12 +1,12 @@
 package com.acordier.processing.mnmd.features;
 
+import processing.core.PApplet;
+
 import com.acordier.processing.mnmd.core.MidiInstrument;
 import com.acordier.processing.mnmd.core.MidiReceiver;
 
-import processing.core.PApplet;
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
-import ddf.minim.ugens.ADSR;
 import ddf.minim.ugens.Frequency;
 import ddf.minim.ugens.MoogFilter;
 import ddf.minim.ugens.Oscil;
@@ -21,48 +21,49 @@ public class Youki implements MidiInstrument {
 
 	Minim minim;
 	AudioOutput out;
-	Oscil osc_1;
-	Oscil osc_2;
+	Oscil vco_1;
+	Oscil vco_2;
 	Oscil lfo;
 	MoogFilter filter;
 	Summer sum;
-	ADSR adsr;
 	MidiReceiver receiver;
 	PApplet sketch;
+	
+	/* transpose values */
+	int tOsc_1;
+	int tOsc_2;
+	
 
 	/** default patching */
 	public Youki(PApplet sketch) {
 		/* manquait l'amplitude du signal */
 		this.sketch = sketch;
-		/* Max amp, Attack, Decay, Sustain, Release */
-		adsr = new ADSR( 0.4F, 0.05F, 0.8F, 0.03F, 0.0001F );
-		osc_1 = new Oscil(440, 0.5F, Waves.SAW);
-		osc_2 = new Oscil(440, 0.5F, Waves.SINE);
-		filter = new MoogFilter(150, 0.65F);
-		lfo = new Oscil(0.250F, 2000.F, Waves.SINE);
+		/* Max amp, Attack, Decay, Sustain, Release */;
+		vco_1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
+		vco_2 = new Oscil(440.F, 0.5F, Waves.SAW);
+		tOsc_1 = 0;
+		tOsc_2 = 1;
+		filter = new MoogFilter(250.F, 0.75F);
+		lfo = new Oscil(0.03125F, 2000.F, Waves.SINE);
 		sum = new Summer();
 		minim = new Minim(sketch);
 		out = minim.getLineOut();
 		lfo.offset.setLastValue(2000.F); // i don't know what i'm doing here
-		lfo.patch(filter.frequency);
-		osc_1.patch(sum);
-		osc_2.patch(sum);
-		sum.patch(adsr);
-		// filter.patch(out);
+		//lfo.patch(filter.frequency);
+		vco_1.patch(sum);
+		vco_2.patch(sum);
+		sum.patch(filter);
 		receiver = new MidiReceiver(this);
 	}
 
 	@Override
 	public void noteOn(float dur) {
-		adsr.patch(out);
-		adsr.noteOn(); // env begins
-
+		filter.patch(out);
 	}
 
 	@Override
 	public void noteOff() {
-		adsr.noteOff(); // env release begins
-		//adsr.unpatchAfterRelease(out); // patch ends;
+		filter.unpatch(out);
 	}
 
 	@Override
@@ -88,8 +89,8 @@ public class Youki implements MidiInstrument {
 	 * and applying any transformation induced by local settings
 	 */
 	public void setAmplitude(float amp) {
-		osc_1.setAmplitude(amp);
-		osc_2.setAmplitude(amp);
+		vco_1.setAmplitude(amp);
+		vco_2.setAmplitude(amp);
 	}
 
 	/**
@@ -97,8 +98,8 @@ public class Youki implements MidiInstrument {
 	 * and applying any transformation induced by local settings
 	 */
 	public void setFrequency(Frequency frequency) {
-		osc_1.setFrequency(frequency);
-		osc_2.setFrequency(frequency);
+		vco_1.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_1 * 12));
+		vco_2.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_2 * 12));
 	}
 
 	@Override
@@ -124,11 +125,4 @@ public class Youki implements MidiInstrument {
 		this.filter = filter;
 	}
 
-	public ADSR getAdsr() {
-		return adsr;
-	}
-
-	public void setAdsr(ADSR adsr) {
-		this.adsr = adsr;
-	}
 }
