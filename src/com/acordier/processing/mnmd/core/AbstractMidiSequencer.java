@@ -67,7 +67,7 @@ public abstract class AbstractMidiSequencer {
 	 * @param note
 	 * @param tick
 	 */
-	private void addMidiEvent(int eventType, int note, int velocity, int tick)
+	private void addMidiEvent(int eventType, int note, int velocity, long tick)
 			throws InvalidMidiDataException {
 		ShortMessage message = new ShortMessage();
 		message.setMessage(eventType, note, velocity);
@@ -97,7 +97,7 @@ public abstract class AbstractMidiSequencer {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	
 	/**
 	 * @param an
 	 *            instance of any class implementing th MidiInstrument interface

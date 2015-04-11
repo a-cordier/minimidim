@@ -25,6 +25,7 @@ public class Youki implements MidiInstrument {
 	Oscil vco_2;
 	Oscil lfo;
 	MoogFilter filter;
+	MoogFilter modFilter;
 	Summer sum;
 	MidiReceiver receiver;
 	PApplet sketch;
@@ -44,15 +45,17 @@ public class Youki implements MidiInstrument {
 		tOsc_1 = 0;
 		tOsc_2 = 1;
 		filter = new MoogFilter(250.F, 0.75F);
-		lfo = new Oscil(0.03125F, 2000.F, Waves.SINE);
+		modFilter = new MoogFilter(1200.F, 0);
+		lfo = new Oscil(3.F, 2000.F, Waves.SINE);
 		sum = new Summer();
 		minim = new Minim(sketch);
 		out = minim.getLineOut();
 		lfo.offset.setLastValue(2000.F); // i don't know what i'm doing here
-		//lfo.patch(filter.frequency);
+		//lfo.patch(modFilter.frequency);
 		vco_1.patch(sum);
 		vco_2.patch(sum);
 		sum.patch(filter);
+		//filter.patch(modFilter);
 		receiver = new MidiReceiver(this);
 	}
 
@@ -120,9 +123,10 @@ public class Youki implements MidiInstrument {
 	public MoogFilter getFilter() {
 		return filter;
 	}
-
-	public void setFilter(MoogFilter filter) {
-		this.filter = filter;
+	
+	public Oscil getLFO(){
+		return lfo;
 	}
+
 
 }

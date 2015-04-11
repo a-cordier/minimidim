@@ -37,7 +37,7 @@ public class Midinette extends AbstractMidiSequencer {
 	public void fourBeat(int note) {
 		stepSequence.fourBeat(note);
 		addNotes();
-
+		
 	}
 
 	private void addNotes() {
@@ -97,6 +97,7 @@ public class Midinette extends AbstractMidiSequencer {
 					sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
 				}
 				sequencer.start();
+
 			}
 
 		} catch (MidiUnavailableException e) {
@@ -110,5 +111,15 @@ public class Midinette extends AbstractMidiSequencer {
 		sequencer.stop();
 		sequencer.setMicrosecondPosition(0);
 	}
+
+	public StepSequence getStepSequence() {
+		return stepSequence;
+	}
+
+	public void setStepSequence(StepSequence stepSequence) {
+		this.stepSequence = stepSequence;
+	}
+	
+
 
 }
