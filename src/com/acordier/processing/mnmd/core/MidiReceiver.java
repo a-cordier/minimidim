@@ -4,6 +4,12 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+/**
+ * MinimReceiver implements the javax.sound.midi.Receiver
+ * to enable handling midi events from a minim instrument
+ * @author acordier
+ *
+ */
 public class MidiReceiver implements Receiver {
 
 	private MidiInstrument instrument;

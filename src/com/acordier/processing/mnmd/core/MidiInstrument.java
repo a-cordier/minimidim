@@ -2,7 +2,12 @@ package com.acordier.processing.mnmd.core;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.ugens.Instrument;
-
+/**
+ * MinimInstrument extends the ddf.minim.Instrument 
+ * to make it reacts to midi events
+ * @author acordier
+ *
+ */
 public interface MidiInstrument extends Instrument {
 	
 	public AudioOutput getAudioOut();

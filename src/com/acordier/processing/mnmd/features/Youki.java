@@ -73,7 +73,7 @@ public class Youki implements MidiInstrument {
 	public void noteOn(int note, int velocity) {
 		setFrequency(Frequency.ofMidiNote(note));
 		setAmplitude(velocity / 254.F);
-		noteOn(0);
+		noteOn(0.5F);
 	}
 
 	@Override

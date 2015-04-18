@@ -9,6 +9,12 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+/**
+ * AbstractMidiSequencer can be extended to link
+ * any MidiInstrument implementation to a javax.sound.midi.Sequencer
+ * @author acordier
+ *
+ */
 public abstract class AbstractMidiSequencer {
 
 	protected Sequence sequence;
@@ -17,7 +23,7 @@ public abstract class AbstractMidiSequencer {
 	protected int tempo; // tempo expressed in bpm
 	protected boolean loop;
 	protected MidiInstrument instrument;
-
+	
 	public void initSequencer(MidiInstrument instrument) {
 		this.instrument = instrument;
 		try {
