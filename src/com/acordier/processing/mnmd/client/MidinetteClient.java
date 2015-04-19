@@ -22,26 +22,27 @@ import ddf.minim.ugens.Waves;
 public class MidinetteClient extends PApplet {
 
 	private static final long serialVersionUID = 1L;
+	private final int SK_WIDTH = 400, SK_HEIGHT = 300;
 	ControlP5 cP5;
 	Knob filterKnob, resKnob;
 	RadioButton vco1Wave, vco2Wave;
-	Slider attackSlider, decaySlider, sustainSlider, releaseSlider;
+	Knob gainKnob;
+	Slider ampSlider, attackSlider, decaySlider, sustainSlider, releaseSlider;
 	Canvas adsrCanvas;
 	List<CheckBox> stepSequencer;
 	final Youki youki = new Youki(this);
 	
 	@Override
 	public void setup() {
-
-		size(400, 300);
+		background(255);
+		size(SK_WIDTH, SK_HEIGHT);
 		cP5 = new ControlP5(this);
-
 		Midinette midinette = new Midinette(youki);
 		stepSequencer = new ArrayList<CheckBox>(midinette.getStepSequence()
 				.size());
 		midinette.randomize(3);
 		midinette.play(true);
-
+		/* FITLER KNOB VIEW */
 		filterKnob = cP5.addKnob("filter").setRange(0, 127)
 				.setViewStyle(Knob.ARC).setConstrained(true).setValue(75)
 				.setPosition(5, 5).setRadius(20)
@@ -61,8 +62,12 @@ public class MidinetteClient extends PApplet {
 		filterKnob.setCaptionLabel("Filter");
 		filterKnob.setLabelVisible(true);
 		filterKnob.setColorCaptionLabel(0);
+		//filterKnob.getColor().setForeground(color(255, 50, 50));
+		filterKnob.getColor().setActive(color(255, 50, 50));
 		filterKnob.getValueLabel().hide();
-
+		/* FITLER KNOB VIEW DONE */
+		
+		/* RES KNOB VIEW */
 		resKnob = cP5.addKnob("res").setRange(0, 127).setViewStyle(Knob.ARC)
 				.setConstrained(true).setValue(75).setPosition(60, 5)
 				.setRadius(20).setDragDirection(Knob.VERTICAL)
@@ -79,23 +84,43 @@ public class MidinetteClient extends PApplet {
 		resKnob.setCaptionLabel("Res.");
 		resKnob.setLabelVisible(true);
 		resKnob.setColorCaptionLabel(0);
+		resKnob.getColor().setActive(color(255, 50, 50));
 		resKnob.getValueLabel().hide();
+		/* RES KNOB VIEW DONE */
 		
-		attackSlider = cP5.addSlider("attack", 0, 127, 200, height - 100, 10,
-				100);
+		/* ADSR VIEW */
+		int widgetHeight = 57;
+		int adsrX = 100;
+		int adsrY = height - widgetHeight;
+		int sliderWidth = 10;
+		ampSlider = cP5.addSlider("amp", 0, 127, adsrX, adsrY, sliderWidth,
+				widgetHeight);
+		ampSlider.addListener(new ControlListener() {
+			@Override
+			public void controlEvent(ControlEvent event) {
+				float value = map(event.getValue(), 0, 127, 0.F, 1.F);
+				System.out.println("amp: " + value);
+				youki.getAdsr().setAmp(value);
+			}
+		});
+		ampSlider.setValue(map(youki.getAdsr().getAmp(),0.F, 1.F, 0,127));
+		
+		attackSlider = cP5.addSlider("attack", 0, 127, adsrX+sliderWidth+1, height - widgetHeight, sliderWidth,
+				widgetHeight);
 		attackSlider.addListener(new ControlListener() {
 			@Override
 			public void controlEvent(ControlEvent event) {
+				float value = map(event.getValue(), 0.00001F, 0.25F, 0, 127);
 				System.out.println("attack: " + event.getValue());
 				youki.getAdsr().setAtt(
 						map(event.getValue(), 0, 127, 0.00001F, 0.25F));
 			}
 		});
 		attackSlider.setValue(map(youki.getAdsr().getAtt(),0.00001F, 0.25F, 0,127));
-
+		attackSlider.getValueLabel().hide();
 
 		decaySlider = cP5
-				.addSlider("decay", 0, 127, 211, height - 100, 10, 100);
+				.addSlider("decay", 0, 127, adsrX+(sliderWidth+1)*2, height - widgetHeight, sliderWidth, widgetHeight);
 		decaySlider.addListener(new ControlListener() {
 			@Override
 			public void controlEvent(ControlEvent event) {
@@ -105,9 +130,10 @@ public class MidinetteClient extends PApplet {
 			}
 		});
 		decaySlider.setValue(map(youki.getAdsr().getDec(), 0.01F, 0.25F, 0, 127));
-
-		sustainSlider = cP5.addSlider("sustain", 0, 127, 222, height - 100, 10,
-				100);
+		decaySlider.getValueLabel().hide();
+		
+		sustainSlider = cP5.addSlider("sustain", 0, 127, adsrX+(sliderWidth+1)*3, height - widgetHeight, sliderWidth,
+				widgetHeight);
 		sustainSlider.addListener(new ControlListener() {
 			@Override
 			public void controlEvent(ControlEvent event) {
@@ -117,9 +143,10 @@ public class MidinetteClient extends PApplet {
 			}
 		});
 		sustainSlider.setValue(map(youki.getAdsr().getSus(),0.0001F, 1.F, 0, 127));
-
-		releaseSlider = cP5.addSlider("release", 0, 127, 233, height - 100, 10,
-				100);
+		sustainSlider.getValueLabel().hide();
+		
+		releaseSlider = cP5.addSlider("release", 0, 127, adsrX+(sliderWidth+1)*4, height - widgetHeight, sliderWidth,
+				widgetHeight);
 		releaseSlider.addListener(new ControlListener() {
 			@Override
 			public void controlEvent(ControlEvent event) {
@@ -129,7 +156,11 @@ public class MidinetteClient extends PApplet {
 			}
 		});
 		releaseSlider.setValue(map(youki.getAdsr().getRel(),  0.0001F, 1.F, 0, 127));
+		releaseSlider.getValueLabel().hide();
 		
+		/* ADSR VIEW DONE */
+		
+		/* VCO 1 WAVE SELECTOR VIEW */
 		vco1Wave = cP5.addRadioButton("vco_1")
 				.setPosition(0, height - 5 * (10 + 1) - 2).setSize(10, 10)
 				.setColorForeground(color(120))
@@ -180,7 +211,9 @@ public class MidinetteClient extends PApplet {
 
 			}
 		});
-
+		/* VCO 1 WAVE SELECTOR VIEW  DONE */
+		
+		/* VCO 2 WAVE SELECTOR VIEW */
 		vco2Wave = cP5.addRadioButton("vco_2")
 				.setPosition(50, height - 5 * (10 + 1) - 2).setSize(10, 10)
 				.setColorForeground(color(120))
@@ -232,25 +265,66 @@ public class MidinetteClient extends PApplet {
 
 			}
 		});
+		
+		/* VCO 2 WAVE SELECTOR VIEW */
+		
+		/* GAIN ROTARY KNOB VIEW */
+		gainKnob = cP5.addKnob("gain").setRange(0, 127).setViewStyle(Knob.ARC)
+				.setConstrained(true).setValue(75).setPosition(120, 5)
+				.setRadius(20).setDragDirection(Knob.VERTICAL)
+				.addListener(new ControlListener() {
+
+					@Override
+					public void controlEvent(ControlEvent event) {
+						float value = map(event.getValue(), 0, 127, -60, 2);
+						System.out.println("gain: " + value);
+						youki.getGain().setValue(value);
+					}
+				});
+		gainKnob.getValueLabel().hide();
+		gainKnob.setCaptionLabel("Gain");
+		gainKnob.setLabelVisible(true);
+		gainKnob.setColorCaptionLabel(0);
+		gainKnob.getColor().setActive(color(255, 50, 50));
+		/* GAIN ROTARY KNOB VIEW DONE */
+		
+		/* WAVE VISUALISATION VIEW */
+		Canvas canvas = new Canvas() {
+			float width = SK_WIDTH, height = 57, cX = 170, cY = SK_HEIGHT-height;
+			@Override
+			public void draw(PApplet arg0) {
+				background(255);
+				fill(cP5.getColor().getBackground());
+				noStroke();
+				rect(cX, cY, width, height);
+				stroke(255);
+				AudioOutput out = youki.getAudioOut();
+				// draw the waveforms
+				for (int i = 0; i < out.bufferSize() - 1; i++) {
+					// find the x position of each buffer value
+					float x1 = map(i, 0, out.bufferSize(), cX, cX+width);
+					float x2 = map(i + 1, 0, out.bufferSize(), cX, cX+width);
+					// draw a line from one buffer position to the next for both
+					// channels
+					float y1 = map(out.left.get(i), 0, 1, cY+height/2,  cY+height);
+					float y2 = map(out.left.get(i+1), 0, 1, cY+height/2,  cY+height);
+					line(x1, y1, x2,
+							y2);
+					line(x1, y1, x2,
+							y2);
+				}
+				
+			}
+		};
+		canvas.setMode(Canvas.PRE);
+		cP5.addCanvas(canvas);
+		/* WAVE VISUALISATION VIEW DONE */
 
 	}
 
 	@Override
 	public void draw() {
-		AudioOutput out = youki.getAudioOut();
-		background(255);
-		// draw the waveforms
-		for (int i = 0; i < out.bufferSize() - 1; i++) {
-			// find the x position of each buffer value
-			float x1 = map(i, 0, out.bufferSize(), 0, width);
-			float x2 = map(i + 1, 0, out.bufferSize(), 0, width);
-			// draw a line from one buffer position to the next for both
-			// channels
-			line(x1, 150 + out.left.get(i) * 100, x2,
-					150 + out.left.get(i + 1) * 100);
-			line(x1, 150 + out.right.get(i) * 100, x2,
-					150 + out.right.get(i + 1) * 100);
-		}
+		
 
  	}
 }

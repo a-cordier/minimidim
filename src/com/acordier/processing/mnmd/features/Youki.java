@@ -10,8 +10,8 @@ import ddf.minim.Minim;
 import ddf.minim.ugens.Bypass;
 import ddf.minim.ugens.Damp;
 import ddf.minim.ugens.Delay;
-import ddf.minim.ugens.Flanger;
 import ddf.minim.ugens.Frequency;
+import ddf.minim.ugens.Gain;
 import ddf.minim.ugens.MoogFilter;
 import ddf.minim.ugens.Oscil;
 import ddf.minim.ugens.Summer;
@@ -25,8 +25,9 @@ public class Youki implements MidiInstrument {
 
 	Minim minim;
 	AudioOutput out;
-	Oscil vco_1;
-	Oscil vco_2;
+	Oscil vco1;
+	Oscil vco2;
+	Gain vco1Gain, vco2Gain;
 	Oscil lfo;
 	MoogFilter filter;
 	MoogFilter modFilter;
@@ -37,7 +38,9 @@ public class Youki implements MidiInstrument {
 	Summer adsrSum;
 	Damp damp;
 	Delay delay;
-	
+	Gain globalGain;
+
+
 	/* transpose values */
 	int tOsc_1;
 	int tOsc_2;
@@ -48,8 +51,8 @@ public class Youki implements MidiInstrument {
 		/* manquait l'amplitude du signal */
 		this.sketch = sketch;
 		/* Max amp, Attack, Decay, Sustain, Release */;
-		vco_1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
-		vco_2 = new Oscil(440.F, 0.5F, Waves.SAW);
+		vco1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
+		vco2 = new Oscil(440.F, 0.5F, Waves.SAW);
 		tOsc_1 = 0;
 		tOsc_2 = -1;
 		adsr = new AdsrX(0.5F, 0.00001F, 0.125F, 0.25F, 0.125F);
@@ -64,19 +67,26 @@ public class Youki implements MidiInstrument {
 		lfo.patch(filter.frequency);
 		//damp = new Damp(0.01F, 0.225F);
 		//damp.patch(filter.frequency);
-		vco_1.patch(sum);
-		vco_2.patch(sum);
+		vco1Gain = new Gain();
+		vco1.patch(vco1Gain);
+		vco1Gain.patch(sum);
+		vco2Gain = new Gain();
+		vco2.patch(vco2Gain);
+		vco2Gain.patch(sum);
 		sum.patch(adsr);
 		adsr.patch(adsrSum);
 		adsrSum.patch(filter);
 		//filter.patch(modFilter);
 		delay = new Delay(0.005F, 0.75F, true, true);
-
+		globalGain = new Gain();
 		Bypass<Delay> delayBypass = new Bypass<Delay>(delay);
 		filter.patch(delayBypass);
-		delayBypass.patch(out);
+		delayBypass.patch(globalGain);
+		globalGain.patch(out);
 		//delayBypass.activate();
 		receiver = new MidiReceiver(this);
+		
+		
 	}
 
 	@Override
@@ -114,8 +124,8 @@ public class Youki implements MidiInstrument {
 	 * and applying any transformation induced by local settings
 	 */
 	public void setAmplitude(float amp) {
-		vco_1.setAmplitude(amp);
-		vco_2.setAmplitude(amp);
+		vco1.setAmplitude(amp);
+		vco2.setAmplitude(amp);
 	}
 
 	/**
@@ -123,8 +133,8 @@ public class Youki implements MidiInstrument {
 	 * and applying any transformation induced by local settings
 	 */
 	public void setFrequency(Frequency frequency) {
-		vco_1.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_1 * 12));
-		vco_2.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_2 * 12));
+		vco1.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_1 * 12));
+		vco2.setFrequency(Frequency.ofMidiNote(frequency.asMidiNote() + tOsc_2 * 12));
 	}
 
 	@Override
@@ -151,11 +161,11 @@ public class Youki implements MidiInstrument {
 	}
 	
 	public Oscil getVCO1(){
-		return vco_1;
+		return vco1;
 	}
 	
 	public Oscil getVCO2(){
-		return vco_2;
+		return vco2;
 	}
 
 	public AdsrX getAdsr() {
@@ -165,6 +175,12 @@ public class Youki implements MidiInstrument {
 	public Minim getMinim(){
 		return minim;
 	}
+
+	public Gain getGain() {
+		return globalGain;
+	}
+	
+	
 	
 
 
