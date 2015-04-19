@@ -7,7 +7,10 @@ import com.acordier.processing.mnmd.core.MidiReceiver;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
-import ddf.minim.ugens.ADSR;
+import ddf.minim.ugens.Bypass;
+import ddf.minim.ugens.Damp;
+import ddf.minim.ugens.Delay;
+import ddf.minim.ugens.Flanger;
 import ddf.minim.ugens.Frequency;
 import ddf.minim.ugens.MoogFilter;
 import ddf.minim.ugens.Oscil;
@@ -30,8 +33,10 @@ public class Youki implements MidiInstrument {
 	Summer sum;
 	MidiReceiver receiver;
 	PApplet sketch;
-	ADSR adsr;
+	AdsrX adsr;
 	Summer adsrSum;
+	Damp damp;
+	Delay delay;
 	
 	/* transpose values */
 	int tOsc_1;
@@ -46,34 +51,44 @@ public class Youki implements MidiInstrument {
 		vco_1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
 		vco_2 = new Oscil(440.F, 0.5F, Waves.SAW);
 		tOsc_1 = 0;
-		tOsc_2 = 2;
-		adsr = new ADSR(0.5F, 0.13F, 0.05F, 0.5F, 1.1F);
-		filter = new MoogFilter(250.F, 0.75F);
-		modFilter = new MoogFilter(1200.F, 0);
+		tOsc_2 = -1;
+		adsr = new AdsrX(0.5F, 0.00001F, 0.125F, 0.25F, 0.125F);
+		filter = new MoogFilter(1200.F, 0.75F);
+		modFilter = new MoogFilter(200.F, 0);
 		lfo = new Oscil(3.F, 2000.F, Waves.SINE);
 		sum = new Summer();
 		adsrSum = new Summer();
 		minim = new Minim(sketch);
 		out = minim.getLineOut();
 		lfo.offset.setLastValue(2000.F); // i don't know what i'm doing here
-		//lfo.patch(modFilter.frequency);
+		lfo.patch(filter.frequency);
+		//damp = new Damp(0.01F, 0.225F);
+		//damp.patch(filter.frequency);
 		vco_1.patch(sum);
 		vco_2.patch(sum);
 		sum.patch(adsr);
 		adsr.patch(adsrSum);
 		adsrSum.patch(filter);
-		filter.patch(out);
+		//filter.patch(modFilter);
+		delay = new Delay(0.005F, 0.75F, true, true);
+
+		Bypass<Delay> delayBypass = new Bypass<Delay>(delay);
+		filter.patch(delayBypass);
+		delayBypass.patch(out);
+		//delayBypass.activate();
 		receiver = new MidiReceiver(this);
 	}
 
 	@Override
 	public void noteOn(float dur) {
+		//adsr.patch(adsrSum);
 		adsr.noteOn();
 	}
 
 	@Override
 	public void noteOff() {
 		adsr.noteOff();
+		//adsr.unpatchAfterRelease(adsrSum);
 	}
 
 	@Override
@@ -134,6 +149,23 @@ public class Youki implements MidiInstrument {
 	public Oscil getLFO(){
 		return lfo;
 	}
+	
+	public Oscil getVCO1(){
+		return vco_1;
+	}
+	
+	public Oscil getVCO2(){
+		return vco_2;
+	}
+
+	public AdsrX getAdsr() {
+		return adsr;
+	}
+	
+	public Minim getMinim(){
+		return minim;
+	}
+	
 
 
 }
