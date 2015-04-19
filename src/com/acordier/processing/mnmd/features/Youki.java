@@ -7,6 +7,7 @@ import com.acordier.processing.mnmd.core.MidiReceiver;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
+import ddf.minim.ugens.ADSR;
 import ddf.minim.ugens.Frequency;
 import ddf.minim.ugens.MoogFilter;
 import ddf.minim.ugens.Oscil;
@@ -29,6 +30,8 @@ public class Youki implements MidiInstrument {
 	Summer sum;
 	MidiReceiver receiver;
 	PApplet sketch;
+	ADSR adsr;
+	Summer adsrSum;
 	
 	/* transpose values */
 	int tOsc_1;
@@ -43,30 +46,34 @@ public class Youki implements MidiInstrument {
 		vco_1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
 		vco_2 = new Oscil(440.F, 0.5F, Waves.SAW);
 		tOsc_1 = 0;
-		tOsc_2 = 1;
+		tOsc_2 = 2;
+		adsr = new ADSR(0.5F, 0.13F, 0.05F, 0.5F, 1.1F);
 		filter = new MoogFilter(250.F, 0.75F);
 		modFilter = new MoogFilter(1200.F, 0);
 		lfo = new Oscil(3.F, 2000.F, Waves.SINE);
 		sum = new Summer();
+		adsrSum = new Summer();
 		minim = new Minim(sketch);
 		out = minim.getLineOut();
 		lfo.offset.setLastValue(2000.F); // i don't know what i'm doing here
 		//lfo.patch(modFilter.frequency);
 		vco_1.patch(sum);
 		vco_2.patch(sum);
-		sum.patch(filter);
-		//filter.patch(modFilter);
+		sum.patch(adsr);
+		adsr.patch(adsrSum);
+		adsrSum.patch(filter);
+		filter.patch(out);
 		receiver = new MidiReceiver(this);
 	}
 
 	@Override
 	public void noteOn(float dur) {
-		filter.patch(out);
+		adsr.noteOn();
 	}
 
 	@Override
 	public void noteOff() {
-		filter.unpatch(out);
+		adsr.noteOff();
 	}
 
 	@Override

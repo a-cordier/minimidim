@@ -49,6 +49,7 @@ public class Midinette extends AbstractMidiSequencer {
 			}
 			i++;
 		}
+	
 	}
 
 	@Override
