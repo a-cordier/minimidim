@@ -6,10 +6,10 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 
-import com.acordier.processing.mnmd.core.AbstractMidiSequencer;
-import com.acordier.processing.mnmd.core.MidiInstrument;
-import com.acordier.processing.mnmd.model.Step;
-import com.acordier.processing.mnmd.model.StepSequence;
+import com.acordier.mnmd.core.AbstractMidiSequencer;
+import com.acordier.mnmd.core.MidiInstrument;
+import com.acordier.mnmd.model.Step;
+import com.acordier.mnmd.model.StepSequence;
 
 public class Midinette extends AbstractMidiSequencer {
 

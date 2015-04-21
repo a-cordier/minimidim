@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.model;
+package com.acordier.mnmd.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;

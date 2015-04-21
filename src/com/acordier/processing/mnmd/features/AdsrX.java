@@ -22,48 +22,48 @@ public class AdsrX extends ADSR {
 		this.rel = rel;
 	}
 
-	public float getAmp() {
+	public float getAmplitude() {
 		return amp;
 	}
 
-	public void setAmp(float amp) {
+	public void setAmplitude(float amp) {
 		this.amp = amp;
 		updateParameters();
 		
 	}
 
-	public float getAtt() {
+	public float getAttack() {
 		return att;
 	}
 
-	public void setAtt(float att) {
+	public void setAttack(float att) {
 		this.att = att;
 		updateParameters();
 	}
 
-	public float getDec() {
+	public float getDecay() {
 		return dec;
 	}
 
-	public void setDec(float dec) {
+	public void setDecay(float dec) {
 		this.dec = dec;
 		updateParameters();
 	}
 
-	public float getSus() {
+	public float getSustain() {
 		return sus;
 	}
 
-	public void setSus(float sus) {
+	public void setSustain(float sus) {
 		this.sus = sus;
 		updateParameters();
 	}
 
-	public float getRel() {
+	public float getRelease() {
 		return rel;
 	}
 
-	public void setRel(float rel) {
+	public void setRelease(float rel) {
 		this.rel = rel;
 		updateParameters();
 	}

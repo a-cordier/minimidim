@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.core;
+package com.acordier.mnmd.core;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;

@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.model;
+package com.acordier.mnmd.model;
 
 
 public class Step {

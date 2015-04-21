@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.core;
+package com.acordier.mnmd.core;
 
 import java.util.ArrayList;
 import java.util.List;

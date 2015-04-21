@@ -2,8 +2,8 @@ package com.acordier.processing.mnmd.features;
 
 import processing.core.PApplet;
 
-import com.acordier.processing.mnmd.core.MidiInstrument;
-import com.acordier.processing.mnmd.core.MidiReceiver;
+import com.acordier.mnmd.core.MidiInstrument;
+import com.acordier.mnmd.core.MidiReceiver;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
@@ -47,16 +47,16 @@ public class Youki implements MidiInstrument {
 	
 
 	/** default patching */
-	public Youki(PApplet sketch) {
+	public Youki(final PApplet sketch) {
 		/* manquait l'amplitude du signal */
 		this.sketch = sketch;
 		/* Max amp, Attack, Decay, Sustain, Release */;
 		vco1 = new Oscil(440.F, 0.5F, Waves.SQUARE);
-		vco2 = new Oscil(440.F, 0.5F, Waves.SAW);
+		vco2 = new Oscil(440.F, 0.5F, Waves.TRIANGLE);
 		tOsc_1 = 0;
 		tOsc_2 = -1;
-		adsr = new AdsrX(0.5F, 0.00001F, 0.125F, 0.25F, 0.125F);
-		filter = new MoogFilter(1200.F, 0.75F);
+		adsr = new AdsrX(0.75F, 0.00001F, 0.125F, 0.25F, 0.125F);
+		filter = new MoogFilter(1200.F, 0.5F);
 		modFilter = new MoogFilter(200.F, 0);
 		lfo = new Oscil(3.F, 2000.F, Waves.SINE);
 		sum = new Summer();
