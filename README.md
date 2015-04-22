@@ -1,6 +1,6 @@
 # MINIMIDIM
 
-Builting a midi synth scripting environment based on the processing minim library
+Buiding an environment with some usefull (to me) midi facilities on top the processing minim library
 
 ## Core Components
 
