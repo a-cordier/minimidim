@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.features;
+package com.acordier.mnmd.features;
 
 import ddf.minim.ugens.ADSR;
 

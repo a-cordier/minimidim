@@ -1,4 +1,4 @@
-package com.acordier.processing.mnmd.features;
+package com.acordier.mnmd.features;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
