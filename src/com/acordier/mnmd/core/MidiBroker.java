@@ -52,7 +52,7 @@ public class MidiBroker {
 		return null;
 	}
 	
-	public static MidiDevice[] getMidiInputDevices() {
+	public static List<MidiDevice> getMidiInputDevices() {
 		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 		List<MidiDevice> devices = new ArrayList<MidiDevice>(0);
 		MidiDevice device;
@@ -67,10 +67,10 @@ public class MidiBroker {
 				}
 			
 		}
-		return (MidiDevice[])devices.toArray();
+		return devices;
 	}
 	
-	public static MidiDevice[] getMidiOutputDevices() {
+	public static List<MidiDevice> getMidiOutputDevices() {
 		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 		List<MidiDevice> devices = new ArrayList<MidiDevice>(0);
 		MidiDevice device;
@@ -85,6 +85,6 @@ public class MidiBroker {
 				}
 			
 		}
-		return (MidiDevice[])devices.toArray();
+		return devices;
 	}
 }

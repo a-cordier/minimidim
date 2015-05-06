@@ -16,18 +16,13 @@ public class Midinette extends AbstractMidiSequencer {
 	private StepSequence stepSequence;
 	private int ticksPerStep;
 
-	public Midinette(MidiInstrument instrument) {
-		initSequencer(instrument);
+	public Midinette() {
+		initSequencer();
 		setTempo(120);
 		setSignature(4, 4); // initialize anything being related to timing
 	}
 
-	public Midinette() {
-		stepSequence = new StepSequence();
-		setSignature(4, 4);
-		setTempo(120);
-		stop();
-	}
+
 
 	public void randomize(int octave) {
 		stepSequence.randomize(octave);
@@ -45,7 +40,7 @@ public class Midinette extends AbstractMidiSequencer {
 		for (Step step : stepSequence) {
 			if (step.isEnabled()) {
 				addNote(step.getNote(), step.getVelocity(), i * ticksPerStep,
-						ticksPerStep*2);
+						ticksPerStep);
 			}
 			i++;
 		}
@@ -55,7 +50,6 @@ public class Midinette extends AbstractMidiSequencer {
 	@Override
 	public void setSignature(int stepsPerBeat, int beats) {
 		ticksPerStep = sequence.getResolution() / stepsPerBeat;
-		instrument.getAudioOut().setDurationFactor(1.F);
 		int stepCount = stepsPerBeat * beats; // setting the size of the step
 												// sequence
 		if (stepSequence == null) {

@@ -31,6 +31,7 @@ public class MidiReceiver implements Receiver {
 
 	private void handleShortMessage(ShortMessage message, long timestamp) {
 		if (message.getCommand() == ShortMessage.NOTE_ON) {
+			System.out.println("midi event received");
 			int note = message.getData1(), velocity = message.getData2();
 			instrument.noteOn(note, velocity);
 		}

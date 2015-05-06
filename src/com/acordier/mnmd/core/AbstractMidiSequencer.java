@@ -22,13 +22,11 @@ public abstract class AbstractMidiSequencer {
 	protected Track track;;
 	protected int tempo; // tempo expressed in bpm
 	protected boolean loop;
-	protected MidiInstrument instrument;
 	
-	public void initSequencer(MidiInstrument instrument) {
-		this.instrument = instrument;
+	public void initSequencer() {
+
 		try {
 			sequencer = MidiSystem.getSequencer();
-			sequencer.getTransmitter().setReceiver(instrument.getReceiver());
 			sequence = new Sequence(Sequence.PPQ, 24);
 			sequencer.setSequence(sequence);
 			track = sequence.createTrack();
@@ -39,11 +37,9 @@ public abstract class AbstractMidiSequencer {
 		}
 	}
 
-	public void initSequencer(MidiInstrument instrument, int resolution) {
-		this.instrument = instrument;
+	public void initSequencer(int resolution) {
 		try {
 			sequencer = MidiSystem.getSequencer();
-			sequencer.getTransmitter().setReceiver(instrument.getReceiver());
 			sequence = new Sequence(Sequence.PPQ, resolution);
 			sequencer.setSequence(sequence);
 			track = sequence.createTrack();
@@ -55,7 +51,6 @@ public abstract class AbstractMidiSequencer {
 	}
 
 	public void setTempo(int tempo) {
-		instrument.getAudioOut().setTempo(tempo);
 		sequencer.setTempoInBPM(tempo);
 		this.tempo = tempo;
 	}
@@ -104,15 +99,15 @@ public abstract class AbstractMidiSequencer {
 		}
 	}
 	
-	/**
-	 * @param an
-	 *            instance of any class implementing th MidiInstrument interface
-	 * @post links sequencer to an instance a midi instrument
-	 **/
-	public void setSynth(MidiInstrument instrument) {
-		this.instrument = instrument;
-		instrument.getAudioOut().setTempo(tempo);
-	}
+//	/**
+//	 * @param an
+//	 *            instance of any class implementing th MidiInstrument interface
+//	 * @post links sequencer to an instance a midi instrument
+//	 **/
+//	public void setSynth(MidiInstrument instrument) {
+//		this.instrument = instrument;
+//		instrument.getAudioOut().setTempo(tempo);
+//	}
 
 	/**
 	 * @param ticks
